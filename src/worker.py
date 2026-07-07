@@ -1,7 +1,7 @@
 from workers import WorkerEntrypoint, Response, fetch
 from collections import namedtuple
 import json
-from bs4 import BeautifulSoup
+from html.parser import HTMLParser
 
 Status = namedtuple("Status", ["code", "message"])
 
@@ -28,7 +28,7 @@ class Default(WorkerEntrypoint):
                 }
             )
         
-        links = self.GetNcscContent
+        links = GetNcscContent()
         if not links:
             
             code = errInternalServer.code
@@ -64,17 +64,40 @@ class Default(WorkerEntrypoint):
                 }
             )
     
-    async def GetNcscContent():
-        response = await fetch("https://www.ncsc.gov.uk/section/keep-up-to-date/reports-advisories")
-        soup = BeautifulSoup(await response.text(), 'html.parser')
 
-        content = soup.find('li', class_="pl-fl-sm")
-        links = []
-        if content:
-            for link in content.find_all('a'):
-                links.append(link)
-        else:
-            return links
-        
-        return links
+
+
+class LinkExtractor(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.in_target_li = False
+        self.links = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+
+        if tag == "li":
+            classes = attrs.get("class", "")
+            if "pl-fl-sm" in classes.split():
+                self.in_target_li = True
+
+        elif self.in_target_li and tag == "a":
+            self.links.append(attrs.get("href"))
+
+    def handle_endtag(self, tag):
+        if tag == "li" and self.in_target_li:
+            self.in_target_li = False
+
+
+async def GetNcscContent():
+    response = await fetch(
+        "https://www.ncsc.gov.uk/section/keep-up-to-date/reports-advisories"
+    )
+
+    html = await response.text()
+
+    parser = LinkExtractor()
+    parser.feed(html)
+
+    return parser.links
         
