@@ -77,8 +77,7 @@ class LinkExtractor(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
-        console.log(attrs)
-        console.log("\n")
+        #console.log(attrs)
 
         if tag == "li":
             classes = attrs.get("class", "")
