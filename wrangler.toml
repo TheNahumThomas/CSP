@@ -1,0 +1,2 @@
+compatibility_flags = [ "python_workers" ]
+main = "src/worker.py"
