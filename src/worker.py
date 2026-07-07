@@ -1,6 +1,8 @@
 from workers import WorkerEntrypoint, Response
 from collections import namedtuple
 import json
+import requests
+from bs4 import BeautifulSoup
 
 Status = namedtuple("Status", ["code", "message"])
 
@@ -26,17 +28,54 @@ class Default(WorkerEntrypoint):
                     "Content-Type": "application/json"
                 }
             )
+        
+        links = self.GetNcscContent
+        if not links:
+            
+            code = errInternalServer.code
+            msg = errInternalServer.message
 
-        code = statusOk.code
-        msg = statusOk.message
+            return Response(
+                json.dumps({"error": msg}),
+                status=code,
+                status_text=msg,
+                headers={
+                    "Content-Type": "application/json"
+                }
+            )
+        
+        elif links:
 
-        return Response(
-            json.dumps({
-                "article": "Modern world imbalanced with nature?"
-            }),
-            status=code,
-            status_text=msg,
-            headers={
-                "Content-Type": "application/json"
-            }
-        )
+            code = statusOk.code
+            msg = statusOk.message
+
+            articles = {}
+            for i, article in enumerate(links):
+                articles[i] = article
+
+
+            return Response(
+                json.dumps({
+                    "articles": articles
+                }),
+                status=code,
+                status_text=msg,
+                headers={
+                    "Content-Type": "application/json"
+                }
+            )
+    
+    def GetNcscContent():
+        response = requests.get("https://www.ncsc.gov.uk/section/keep-up-to-date/reports-advisories")
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        content = soup.find('li', class_="pl-fl-sm")
+        links = []
+        if content:
+            for link in content.find_all('a'):
+                links.append(link)
+        else:
+            return links
+        
+        return links
+        
