@@ -2,6 +2,8 @@ from workers import WorkerEntrypoint, Response, fetch
 from collections import namedtuple
 import json
 from html.parser import HTMLParser
+import logging
+from js import console
 
 Status = namedtuple("Status", ["code", "message"])
 
@@ -75,12 +77,12 @@ class LinkExtractor(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
-        print(attrs)
-        print("\n")
+        console.log(attrs)
+        console.log("\n")
 
         if tag == "li":
             classes = attrs.get("class", "")
-            print(classes)
+            console.log(classes)
             if "pl-fl-sm" in classes.split():
                 self.in_target_li = True
 
