@@ -1,7 +1,6 @@
 from workers import WorkerEntrypoint, Response, fetch
 from collections import namedtuple
 import json
-import requests
 from bs4 import BeautifulSoup
 
 Status = namedtuple("Status", ["code", "message"])
