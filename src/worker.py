@@ -75,9 +75,11 @@ class LinkExtractor(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
+        print(attrs+"\n")
 
         if tag == "li":
             classes = attrs.get("class", "")
+            print(classes)
             if "pl-fl-sm" in classes.split():
                 self.in_target_li = True
 
