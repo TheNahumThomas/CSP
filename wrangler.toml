@@ -5,3 +5,9 @@ compatibility_date = "2025-12-31"
 compatibility_flags = [ "python_workers" ]
 
 main = "src/worker.py"
+
+[observability.logs]
+
+enabled = true
+
+invocation_logs = false
