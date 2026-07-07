@@ -1,4 +1,7 @@
 name = "csp"
+
 compatibility_date = "2025-12-31"
+
 compatibility_flags = [ "python_workers" ]
+
 main = "src/worker.py"
