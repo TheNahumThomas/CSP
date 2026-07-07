@@ -28,7 +28,7 @@ class Default(WorkerEntrypoint):
                 }
             )
         
-        links = GetNcscContent()
+        links = await GetNcscContent()
         if not links:
             
             code = errInternalServer.code
@@ -49,8 +49,8 @@ class Default(WorkerEntrypoint):
             msg = statusOk.message
 
             articles = {}
-            for i, article in enumerate(links):
-                articles[i] = article
+            for i in range(0<len(links)):
+                articles[i] = links[i]
 
 
             return Response(
