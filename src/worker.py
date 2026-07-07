@@ -1,4 +1,4 @@
-from workers import WorkerEntrypoint, Response
+from workers import WorkerEntrypoint, Response, fetch
 from collections import namedtuple
 import json
 import requests
@@ -65,9 +65,9 @@ class Default(WorkerEntrypoint):
                 }
             )
     
-    def GetNcscContent():
-        response = requests.get("https://www.ncsc.gov.uk/section/keep-up-to-date/reports-advisories")
-        soup = BeautifulSoup(response.content, 'html.parser')
+    async def GetNcscContent():
+        response = await fetch("https://www.ncsc.gov.uk/section/keep-up-to-date/reports-advisories")
+        soup = BeautifulSoup(await response.text(), 'html.parser')
 
         content = soup.find('li', class_="pl-fl-sm")
         links = []
